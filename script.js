@@ -4,7 +4,9 @@ const searchImagesBtn = document.querySelector(".search-box input");
 const downloadBtn = document.querySelector(".buttons .fa-download");
 const lightBoxBtn = document.querySelector(".ligthbox");
 const popularKeyword = document.querySelectorAll(".popular-keyword ul li");
-const messageHanding = document.querySelector(".message-handling");
+const messageHanding = document.querySelector(".message-handling h2");
+const languages = document.querySelectorAll(".language p a");
+const contentHeader = document.querySelector(".content");
 
 const apiKey = "wWpKoeicP43bcGMr4dUFIRw495oSX5dS6n08FLy1yqW78lVJ56aCVgxl";
 let perPage = 15;
@@ -25,16 +27,29 @@ const downloadImg = (imageURL) => {
     .catch(() => alert("Failed to download image!"));
 };
 
-const showLightBox = (name, image, alt) => {
+const showLightBox = async (name, image, alt) => {
+  let pictureName = alt;
+  if (!isEnglish) {
+    if (alt !== "") {
+      pictureName = await translateKeywords(
+        `https://api.mymemory.translated.net/get?q=${alt}&langpair=en|id`
+      );
+    }
+  }
   document.body.style.overflow = "hidden";
   lightBoxBtn.querySelector("span").innerText = name;
   lightBoxBtn.querySelector("img").src = image;
-  lightBoxBtn.querySelector(".image-name p").innerText = alt;
-  lightBoxBtn.classList.add("show");
+  lightBoxBtn.querySelector(".image-name p").innerText = pictureName;
+  lightBoxBtn.classList.add("show-ligthbox");
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("show-ligthbox")) {
+      disableLightbox();
+    }
+  });
 };
 
 const disableLightbox = () => {
-  lightBoxBtn.classList.remove("show");
+  lightBoxBtn.classList.remove("show-ligthbox");
   document.body.style.overflow = "scroll";
 };
 
@@ -57,7 +72,11 @@ const generateHTMl = (images) => {
 };
 
 const getImages = (apiURL) => {
-  loadMoreBtn.innerText = "Loading...";
+  if (isEnglish) {
+    loadMoreBtn.innerText = "Loading...";
+  } else {
+    loadMoreBtn.innerText = "Memuat...";
+  }
   loadMoreBtn.classList.add("loading");
   fetch(apiURL, {
     headers: {
@@ -67,13 +86,13 @@ const getImages = (apiURL) => {
     .then((res) => res.json())
     .then((res) => {
       generateHTMl(res.photos);
+      changeLanguage();
       if (res.photos.length === 0) {
-        messageHanding.style.display = "flex";
+        messageHanding.style.display = "block";
         loadMoreBtn.style.display = "none";
       } else {
         loadMoreBtn.style.display = "flex";
         messageHanding.style.display = "none";
-        loadMoreBtn.innerText = "Load More";
         loadMoreBtn.classList.remove("loading");
       }
     });
@@ -89,6 +108,12 @@ const loadMoreImage = () => {
   );
 };
 
+const translateKeywords = async (apiURL) => {
+  const response = await fetch(apiURL);
+  const data = await response.json();
+  return data.responseData.translatedText;
+};
+
 const searchImages = () => {
   searchKeywords = searchImagesBtn.value;
   if (searchKeywords === "") {
@@ -102,11 +127,17 @@ const searchImages = () => {
   }
   timing++;
   let valueA = timing;
-  setTimeout(() => {
+  setTimeout(async () => {
     let valueB = timing;
     if (valueA === valueB) {
       imagesWrapper.innerHTML = "";
       currentPage = 1;
+
+      if (!isEnglish) {
+        searchKeywords = await translateKeywords(
+          `https://api.mymemory.translated.net/get?q=${searchKeywords}&langpair=id|en`
+        );
+      }
       getImages(
         `https://api.pexels.com/v1/search/?page=${currentPage}&per_page=${perPage}&query=${searchKeywords}`
       );
@@ -132,6 +163,45 @@ popularKeyword.forEach((btn) => {
     getImages(
       `https://api.pexels.com/v1/search/?page=${currentPage}&per_page=${perPage}&query=${searchKeywords}`
     );
+  });
+});
+
+const changeLanguage = () => {
+  if (isEnglish) {
+    contentHeader.querySelector("h1").innerText =
+      "Stunning royalty-free images & royalty-free stock";
+    contentHeader.querySelector("p").innerText =
+      "Over 4 million+ high quality stock images, videos and music shared by our talented community";
+    contentHeader.querySelector("input").placeholder =
+      "Search for all image here";
+    messageHanding.innerText = "Sorry, we couldn't find any matches";
+    loadMoreBtn.innerText = "Load More";
+  } else {
+    contentHeader.querySelector("h1").innerText =
+      "Gambar-gambar memukau & menakjubkan bebas royalti";
+    contentHeader.querySelector("p").innerText =
+      "Lebih dari 4 juta+ gambar berkualitas tinggi yang dibagikan oleh komunitas berbakat kami";
+    contentHeader.querySelector("input").placeholder =
+      "Cari semua gambar di sini";
+    messageHanding.innerText = "Maaf, kami tidak menemukan hasil yang sesuai";
+    loadMoreBtn.innerText = "Muat Lebih";
+  }
+};
+
+let isEnglish = true;
+languages.forEach((language) => {
+  language.addEventListener("click", (e) => {
+    for (let i = 0; i < languages.length; i++) {
+      languages[i].classList.remove("active");
+    }
+    language.classList.add("active");
+    if (language.classList.contains("en")) {
+      isEnglish = true;
+    } else {
+      isEnglish = false;
+    }
+    changeLanguage();
+    searchImages();
   });
 });
 
