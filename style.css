@@ -34,7 +34,7 @@ body::-webkit-scrollbar {
    border-radius: 5px;
 }
 
-.ligthbox.show {
+.ligthbox.show-ligthbox {
    display: flex;
 }
 
@@ -169,6 +169,29 @@ header .buttons i:last-child {
    border: none;
 }
 
+.language {
+   display: flex;
+   position: absolute;
+   right: 0;
+   top: 0;
+   margin: 25px 25px 0 0;
+}
+
+.language p {
+   font-size: 1.2rem;
+   margin-left: 10px;
+   cursor: pointer;
+}
+
+.language p a {
+   color: #fff;
+}
+
+.language p a.active {
+   color: #1F8A70;
+   pointer-events: none;
+}
+
 .information {
    position: absolute;
    right: 0;
@@ -262,12 +285,12 @@ header .buttons i:last-child {
    align-items: center;
    justify-content: center;
    text-align: center;
-   margin: 50px 0;
-   display: none;
 }
 
 .message-handling h2 {
+   display: none;
    color: rgba(0,0,0,0.6);
+   margin: 50px 0;
 }
 
 .images-galery {
@@ -391,7 +414,7 @@ header .buttons i:last-child {
    }
 
    .ligthbox .ligthbox-detail {
-      width: 90%;
+      width: 100%;
    }
 
    .ligthbox-detail .artist {
@@ -434,6 +457,11 @@ header .buttons i:last-child {
 
    .ligthbox .image-name p{
       font-size: 0.9rem;
+   }
+
+   .language p {
+      font-size: 1rem;
+      margin-left: 10px;
    }
 
    .list-menu {
