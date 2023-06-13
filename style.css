@@ -465,6 +465,7 @@ header .buttons i:last-child {
    }
 
    .ligthbox .image-name p{
+      width: 75%;
       font-size: 0.9rem;
    }
 
