@@ -528,8 +528,8 @@ header .buttons i:last-child {
    }
    
    .message-handling h2 {
-      width: 80%;
-      font-size: 1.2rem;
+      width: 65%;
+      font-size: 0.95rem;
       color: rgba(0,0,0,0.6);
    }
 

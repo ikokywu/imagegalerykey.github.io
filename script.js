@@ -63,7 +63,7 @@ const generateHTMl = async (images) => {
 
   if (!isEnglish) {
     imageName = await translateKeywords(
-      `https://api.mymemory.translated.net/get?q=${imageName}&langpair=en|id&de=tsuzuran2@gmail.com`
+      `https://api.mymemory.translated.net/get?q=${imageName}&langpair=en|id&de=tsuzuran4@gmail.com`
     );
     imageName = imageName.split(",");
     loadMoreBtn.innerText = "Muat Lebih";
@@ -135,6 +135,7 @@ const translateKeywords = async (apiURL) => {
     if (data.responseStatus > 400 || !data.matches) {
       error = true;
     }
+    console.log(data);
     return data.responseData.translatedText;
   } catch {
     return "Terjemahan tidak tersedia";
