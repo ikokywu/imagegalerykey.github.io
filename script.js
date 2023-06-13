@@ -14,6 +14,9 @@ let currentPage = 1;
 let searchKeywords = null;
 let apiURLDefault = `https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`;
 let timing = 1;
+let error = false;
+let popularKeyStatus = null;
+let isEnglish = true;
 
 const downloadImg = (imageURL) => {
   fetch(imageURL)
@@ -28,18 +31,15 @@ const downloadImg = (imageURL) => {
 };
 
 const showLightBox = async (name, image, alt) => {
-  let pictureName = alt;
-  if (!isEnglish) {
-    if (alt !== "") {
-      pictureName = await translateKeywords(
-        `https://api.mymemory.translated.net/get?q=${alt}&langpair=en|id`
-      );
-    }
-  }
   document.body.style.overflow = "hidden";
   lightBoxBtn.querySelector("span").innerText = name;
   lightBoxBtn.querySelector("img").src = image;
-  lightBoxBtn.querySelector(".image-name p").innerText = pictureName;
+  if (error) {
+    lightBoxBtn.querySelector(".image-name p").innerText =
+      "Terjemahan tidak tersedia. Mohon tunggu beberapa saat";
+  } else {
+    lightBoxBtn.querySelector(".image-name p").innerText = alt;
+  }
   lightBoxBtn.classList.add("show-ligthbox");
   document.addEventListener("click", (e) => {
     if (e.target.classList.contains("show-ligthbox")) {
@@ -53,18 +53,39 @@ const disableLightbox = () => {
   document.body.style.overflow = "scroll";
 };
 
-const generateHTMl = (images) => {
+const generateHTMl = async (images) => {
+  let imageName = [];
+  let index = 0;
+
+  for (let i = 0; i < images.length; i++) {
+    imageName.push(images[i].alt);
+  }
+
+  if (!isEnglish) {
+    imageName = await translateKeywords(
+      `https://api.mymemory.translated.net/get?q=${imageName}&langpair=en|id&de=tsuzuran2@gmail.com`
+    );
+    imageName = imageName.split(",");
+    loadMoreBtn.innerText = "Muat Lebih";
+  } else {
+    loadMoreBtn.innerText = "Load More";
+  }
+  loadMoreBtn.classList.remove("loading");
   imagesWrapper.innerHTML += images
     .map(
       (image) =>
-        `<li onclick="showLightBox('${image.photographer}', '${image.src.large2x}', '${image.alt}')">
+        `<li onclick="showLightBox('${image.photographer}', '${
+          image.src.large2x
+        }', '${imageName[index++]}')">
     <img src="${image.src.large2x}" alt="${image.alt}">
     <div class="detail">
        <div class="photographer">
           <i class="fa-solid fa-camera"></i>
           <span>${image.photographer}</span>
        </div>
-       <button onclick="downloadImg('${image.src.large2x}');event.stopPropagation()"><i class="fa-solid fa-download"></i></button>
+       <button onclick="downloadImg('${
+         image.src.large2x
+       }');event.stopPropagation()"><i class="fa-solid fa-download"></i></button>
     </div>
  </li>`
     )
@@ -86,14 +107,12 @@ const getImages = (apiURL) => {
     .then((res) => res.json())
     .then((res) => {
       generateHTMl(res.photos);
-      changeLanguage();
       if (res.photos.length === 0) {
         messageHanding.style.display = "block";
         loadMoreBtn.style.display = "none";
       } else {
         loadMoreBtn.style.display = "flex";
         messageHanding.style.display = "none";
-        loadMoreBtn.classList.remove("loading");
       }
     });
 };
@@ -109,9 +128,17 @@ const loadMoreImage = () => {
 };
 
 const translateKeywords = async (apiURL) => {
-  const response = await fetch(apiURL);
-  const data = await response.json();
-  return data.responseData.translatedText;
+  try {
+    const response = await fetch(apiURL);
+    const data = await response.json();
+    error = false;
+    if (data.responseStatus > 400 || !data.matches) {
+      error = true;
+    }
+    return data.responseData.translatedText;
+  } catch {
+    return "Terjemahan tidak tersedia";
+  }
 };
 
 const searchImages = () => {
@@ -132,7 +159,6 @@ const searchImages = () => {
     if (valueA === valueB) {
       imagesWrapper.innerHTML = "";
       currentPage = 1;
-
       if (!isEnglish) {
         searchKeywords = await translateKeywords(
           `https://api.mymemory.translated.net/get?q=${searchKeywords}&langpair=id|en`
@@ -156,10 +182,11 @@ popularKeyword.forEach((btn) => {
       }
     }
     searchImagesBtn.value = null;
+    popularKeyStatus = btn.innerText;
+    searchKeywords = btn.innerText;
     btn.classList.add("active");
     currentPage = 1;
     imagesWrapper.innerHTML = "";
-    searchKeywords = btn.innerText;
     getImages(
       `https://api.pexels.com/v1/search/?page=${currentPage}&per_page=${perPage}&query=${searchKeywords}`
     );
@@ -168,6 +195,7 @@ popularKeyword.forEach((btn) => {
 
 const changeLanguage = () => {
   if (isEnglish) {
+    error = false;
     contentHeader.querySelector("h1").innerText =
       "Stunning royalty-free images & royalty-free stock";
     contentHeader.querySelector("p").innerText =
@@ -175,7 +203,6 @@ const changeLanguage = () => {
     contentHeader.querySelector("input").placeholder =
       "Search for all image here";
     messageHanding.innerText = "Sorry, we couldn't find any matches";
-    loadMoreBtn.innerText = "Load More";
   } else {
     contentHeader.querySelector("h1").innerText =
       "Gambar-gambar memukau & menakjubkan bebas royalti";
@@ -184,11 +211,22 @@ const changeLanguage = () => {
     contentHeader.querySelector("input").placeholder =
       "Cari semua gambar di sini";
     messageHanding.innerText = "Maaf, kami tidak menemukan hasil yang sesuai";
-    loadMoreBtn.innerText = "Muat Lebih";
+  }
+  refreshData();
+};
+
+const refreshData = () => {
+  if (popularKeyStatus !== null) {
+    currentPage = 1;
+    imagesWrapper.innerHTML = "";
+    getImages(
+      `https://api.pexels.com/v1/search/?page=${currentPage}&per_page=${perPage}&query=${popularKeyStatus}`
+    );
+  } else {
+    getImages(apiURLDefault);
   }
 };
 
-let isEnglish = true;
 languages.forEach((language) => {
   language.addEventListener("click", (e) => {
     for (let i = 0; i < languages.length; i++) {
