@@ -135,7 +135,6 @@ const translateKeywords = async (apiURL) => {
     if (data.responseStatus > 400 || !data.matches) {
       error = true;
     }
-    console.log(data);
     return data.responseData.translatedText;
   } catch {
     return "Terjemahan tidak tersedia";
@@ -224,6 +223,8 @@ const refreshData = () => {
       `https://api.pexels.com/v1/search/?page=${currentPage}&per_page=${perPage}&query=${popularKeyStatus}`
     );
   } else {
+    currentPage = 1;
+    imagesWrapper.innerHTML = "";
     getImages(apiURLDefault);
   }
 };
@@ -240,7 +241,6 @@ languages.forEach((language) => {
       isEnglish = false;
     }
     changeLanguage();
-    searchImages();
   });
 });
 
