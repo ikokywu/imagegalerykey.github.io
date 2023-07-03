@@ -478,7 +478,7 @@ header .buttons i:last-child {
       padding: 4px 7px;
    }
 
-   .list-menu {
+   .list-menu {  
       margin: 40px 0 10px;
       padding-bottom: 20px;
       border-bottom: 1px solid rgba(0,0,0,0.1);
@@ -514,8 +514,17 @@ header .buttons i:last-child {
       margin-top: 0;
    }
 
+   .popular-keyword ul {
+      width: 100%;
+      margin-left: 20px;
+      overflow: scroll;
+   }
+
+   .popular-keyword ul::-webkit-scrollbar {
+      display: none;
+   }
+   
    .popular-keyword ul li {
-      
       font-size: 0.9rem;
    }
 

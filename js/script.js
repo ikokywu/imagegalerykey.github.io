@@ -197,7 +197,7 @@ const changeLanguage = () => {
   if (isEnglish) {
     error = false;
     contentHeader.querySelector("h1").innerText =
-      "Discover an Exquisite Collection of Royalty-Free Images";
+      "Discover Exquisite Collection of Royalty-Free Images";
     contentHeader.querySelector("p").innerText =
       "Over 1 million+ high quality stock images, videos and music shared by our talented community";
     contentHeader.querySelector("input").placeholder =
