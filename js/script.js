@@ -197,9 +197,9 @@ const changeLanguage = () => {
   if (isEnglish) {
     error = false;
     contentHeader.querySelector("h1").innerText =
-      "Stunning royalty-free images & royalty-free stock";
+      "Discover an Exquisite Collection of Royalty-Free Images";
     contentHeader.querySelector("p").innerText =
-      "Over 4 million+ high quality stock images, videos and music shared by our talented community";
+      "Over 1 million+ high quality stock images, videos and music shared by our talented community";
     contentHeader.querySelector("input").placeholder =
       "Search for all image here";
     messageHanding.innerText = "Sorry, we couldn't find any matches";
@@ -207,7 +207,7 @@ const changeLanguage = () => {
     contentHeader.querySelector("h1").innerText =
       "Gambar-gambar memukau & menakjubkan bebas royalti";
     contentHeader.querySelector("p").innerText =
-      "Lebih dari 4 juta+ gambar berkualitas tinggi yang dibagikan oleh komunitas berbakat kami";
+      "Lebih dari 1 juta+ gambar berkualitas tinggi yang dibagikan oleh komunitas berbakat kami";
     contentHeader.querySelector("input").placeholder =
       "Cari semua gambar di sini";
     messageHanding.innerText = "Maaf, kami tidak menemukan hasil yang sesuai";

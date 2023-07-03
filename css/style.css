@@ -515,6 +515,7 @@ header .buttons i:last-child {
    }
 
    .popular-keyword ul li {
+      
       font-size: 0.9rem;
    }
 
@@ -597,7 +598,6 @@ header .buttons i:last-child {
    }
 
    .list-menu ul {
-      width: 90%;
       overflow: scroll;
    }
 
